@@ -2,13 +2,13 @@
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
-    // "rootDir": "./src",
-    // "outDir": "./dist",
+    "rootDir": ".",
+    "outDir": "dist",
 
     // Environment Settings
-    // See also https://aka.ms/tsconfig/module
     "module": "CommonJS",
-    "target": "esnext",
+    "target": "ES2020",
+    "moduleResolution": "node",
     "types": ["node"],
     // For nodejs:
     // "lib": ["esnext"],
@@ -34,11 +34,10 @@
 
     // Recommended Options
     "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
-    "skipLibCheck": true,
+    "moduleDetection": "force"
   }
 }
