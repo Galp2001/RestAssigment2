@@ -15,6 +15,9 @@ app.get('/REST', (req: Request, res: Response) => {
     res.send('RESTAPI!');
 });
 
+const { postsRouter } = require('./src/routes/posts');
+app.use('/post', postsRouter);
+
 async function start() {
     try {
         await connectDB();
