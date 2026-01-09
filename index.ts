@@ -17,6 +17,8 @@ app.get('/REST', (req: Request, res: Response) => {
 
 const { postsRouter } = require('./src/routes/posts');
 app.use('/post', postsRouter);
+const { commentsRouter } = require('./src/routes/comments');
+app.use('/comment', commentsRouter);
 
 async function start() {
     try {

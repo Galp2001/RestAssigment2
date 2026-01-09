@@ -36,3 +36,35 @@ Content-Type: application/json
 GET http://localhost:3000/
 ###
 GET http://localhost:3000/REST
+
+###
+### Add a new comment
+POST http://localhost:3000/comment
+Content-Type: application/json
+
+{
+	"postId": "{{postId}}",
+	"authorId": "user2",
+	"text": "Nice post!"
+}
+
+###
+### Get comments for a post
+GET http://localhost:3000/comment?post={{postId}}
+
+###
+### Get a comment by id
+GET http://localhost:3000/comment/{{commentId}}
+
+###
+### Update a comment
+PUT http://localhost:3000/comment/{{commentId}}
+Content-Type: application/json
+
+{
+	"text": "Updated comment text"
+}
+
+###
+### Delete a comment
+DELETE http://localhost:3000/comment/{{commentId}}
