@@ -1,6 +1,116 @@
-### Tests moved to Jest
+### Posts — Create
+POST http://localhost:3000/post
+Content-Type: application/json
 
-All manual REST requests were removed. Automated API tests live in `tests/` and can be run with:
+{
+  "title": "My first post",
+  "body": "This is the body of the post.",
+  "senderId": "user123"
+}
 
-		npm test
+### Posts — Create (missing fields -> 400)
+POST http://localhost:3000/post
+Content-Type: application/json
+
+{
+  "title": "Bad Post"
+}
+
+### Posts — List all
+### Posts — Create
+POST http://localhost:3000/post
+Content-Type: application/json
+
+{
+  "title": "My first post",
+  "body": "This is the body of the post.",
+  "senderId": "user123"
+}
+
+### Posts — Create (missing fields -> 400)
+POST http://localhost:3000/post
+Content-Type: application/json
+
+{
+  "title": "Bad Post"
+}
+
+### Posts — List all
+GET http://localhost:3000/post
+
+### Posts — List by sender
+GET http://localhost:3000/post?sender=user123
+
+### Posts — Get by id
+GET http://localhost:3000/post/{{postId}}
+
+### Posts — Update
+PUT http://localhost:3000/post/{{postId}}
+Content-Type: application/json
+
+{
+  "title": "Updated title",
+  "body": "Updated body"
+}
+
+### Comments — Create (for post)
+POST http://localhost:3000/comment
+Content-Type: application/json
+
+{
+  "postId": "{{postId}}",
+  "authorId": "authorA",
+  "text": "Nice post!"
+}
+
+### Comments — Create (missing fields -> 400)
+POST http://localhost:3000/comment
+Content-Type: application/json
+
+{
+  "postId": "{{postId}}"
+}
+
+### Comments — List by post
+GET http://localhost:3000/comment?post={{postId}}
+
+### Comments — Get by id
+GET http://localhost:3000/comment/{{commentId}}
+
+### Comments — Update
+PUT http://localhost:3000/comment/{{commentId}}
+Content-Type: application/json
+
+{
+  "text": "Edited text"
+}
+
+### Comments — Delete
+DELETE http://localhost:3000/comment/{{commentId}}
+
+### Notes
+- Use the {{postId}} and {{commentId}} placeholders returned by create requests.
+- Successful status codes: POST -> 201, GET -> 200, PUT -> 200, DELETE -> 204.
+- Validation errors return 400 with an error message. Missing resources return 404.
+- Validation errors return 400 with an error message. Missing resources return 404.
+
+### How to obtain `postId` / `commentId`
+
+1. Run the **Posts — Create** request. The response body includes the created post's `_id`.
+2. Run the **Comments — Create (for post)** request (it will return the created comment with `_id`).
+3. Copy the returned `_id` values and store them in a Rest Client environment file so placeholders work automatically.
+
+Create a file named `rest-client.env.json` in the workspace root (used by the REST Client extension) and paste:
+
+```json
+{
+  "local": {
+    "postId": "PASTE_POST_ID_HERE",
+    "commentId": "PASTE_COMMENT_ID_HERE"
+  }
+}
+```
+
+Then select the `local` environment in the REST Client and the `{{postId}}` / `{{commentId}}` placeholders will be substituted.
+
 
