@@ -19,6 +19,8 @@ const { postsRouter } = require('./src/routes/posts');
 app.use('/post', postsRouter);
 const { commentsRouter } = require('./src/routes/comments');
 app.use('/comment', commentsRouter);
+const { errorHandler } = require('./src/middleware/errorHandler');
+app.use(errorHandler);
 
 async function start() {
     try {

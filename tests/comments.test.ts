@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import request from 'supertest';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
@@ -21,7 +22,7 @@ afterAll(async () => {
 afterEach(async () => {
   const collections = mongoose.connection.collections;
   for (const key in collections) {
-    await collections[key].deleteMany({});
+    if (collections[key]) await collections[key].deleteMany({});
   }
 });
 

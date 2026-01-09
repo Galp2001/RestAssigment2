@@ -6,13 +6,14 @@ import {
   updateComment,
   deleteComment,
 } from '../controllers/commentController';
+import { validateCommentCreate, validateCommentUpdate } from '../middleware/validation';
 
 const router = Router();
 
-router.post('/', createComment);
+router.post('/', validateCommentCreate, createComment);
 router.get('/', listComments);
 router.get('/:id', getComment);
-router.put('/:id', updateComment);
+router.put('/:id', validateCommentUpdate, updateComment);
 router.delete('/:id', deleteComment);
 
 export { router as commentsRouter };

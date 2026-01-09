@@ -1,51 +1,40 @@
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { Post } from '../models';
 
-export async function createPost(req: Request, res: Response) {
+export async function createPost(req: Request, res: Response, next: NextFunction) {
   try {
-    const { title, body, senderId } = req.body as { title?: string; body?: string; senderId?: string };
-    if (!title || !body || !senderId) {
-      return res.status(400).json({ error: 'title, body and senderId are required' });
-    }
-
+    const { title, body, senderId } = req.body as { title: string; body: string; senderId: string };
     const created = await Post.create({ title, body, senderId });
     return res.status(201).json(created);
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Internal server error' });
+    return next(err);
   }
 }
 
-export async function listPosts(req: Request, res: Response) {
+export async function listPosts(req: Request, res: Response, next: NextFunction) {
   try {
     const sender = req.query.sender as string | undefined;
     const filter = sender ? { senderId: sender } : {};
     const posts = await Post.find(filter).sort({ createdAt: -1 });
     return res.json(posts);
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Internal server error' });
+    return next(err);
   }
 }
 
-export async function getPost(req: Request, res: Response) {
+export async function getPost(req: Request, res: Response, next: NextFunction) {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Post not found' });
     return res.json(post);
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Internal server error' });
+    return next(err);
   }
 }
 
-export async function updatePost(req: Request, res: Response) {
+export async function updatePost(req: Request, res: Response, next: NextFunction) {
   try {
     const { title, body, senderId } = req.body as { title?: string; body?: string; senderId?: string };
-    if (!title || !body) {
-      return res.status(400).json({ error: 'title and body are required' });
-    }
-
     const updated = await Post.findByIdAndUpdate(
       req.params.id,
       { title, body, ...(senderId ? { senderId } : {}) },
@@ -54,7 +43,6 @@ export async function updatePost(req: Request, res: Response) {
     if (!updated) return res.status(404).json({ error: 'Post not found' });
     return res.json(updated);
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Internal server error' });
+    return next(err);
   }
 }
