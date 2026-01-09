@@ -34,10 +34,11 @@ export async function getPost(req: Request, res: Response, next: NextFunction) {
 
 export async function updatePost(req: Request, res: Response, next: NextFunction) {
   try {
-    const { title, body, senderId } = req.body as { title?: string; body?: string; senderId?: string };
+    const { title, body, senderId } = req.body as { title: string; body: string; senderId: string };
+    // Full replace: overwrite the post fields with the provided values
     const updated = await Post.findByIdAndUpdate(
       req.params.id,
-      { title, body, ...(senderId ? { senderId } : {}) },
+      { title, body, senderId },
       { new: true, runValidators: true }
     );
     if (!updated) return res.status(404).json({ error: 'Post not found' });

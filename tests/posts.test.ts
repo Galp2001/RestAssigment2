@@ -69,7 +69,7 @@ describe('Posts API', () => {
     const create = await request(app).post('/post').send({ title: 'Old', body: 'Old', senderId: 's' });
     const id = create.body._id;
 
-    const updated = await request(app).put(`/post/${id}`).send({ title: 'New', body: 'New' });
+    const updated = await request(app).put(`/post/${id}`).send({ title: 'New', body: 'New', senderId: 's' });
     expect(updated.status).toBe(200);
     expect(updated.body.title).toBe('New');
   });
