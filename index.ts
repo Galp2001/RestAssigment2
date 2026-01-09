@@ -44,6 +44,9 @@ async function start() {
     process.on('SIGTERM', shutdown);
 }
 
-start();
+// Only start the server if this file is run directly.
+if (require.main === module) {
+    start();
+}
 
 module.exports = app;
