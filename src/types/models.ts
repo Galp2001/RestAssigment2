@@ -28,3 +28,13 @@ export interface CommentDoc extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface UserDoc extends Document {
+  username: string;
+  email: string;
+  passwordHash: string;
+  displayName?: string;
+  bio?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
