@@ -13,7 +13,7 @@ const userSchema = new Schema<UserDoc>(
   { timestamps: true }
 );
 
-userSchema.index({ username: 1 });
-userSchema.index({ email: 1 });
+// `unique: true` on the schema paths already creates the indexes.
+// Removed duplicate explicit index declarations to avoid warnings.
 
 export const User = model<UserDoc>('User', userSchema);
