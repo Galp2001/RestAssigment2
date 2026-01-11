@@ -49,3 +49,38 @@ Next steps
 - Add CI to run tests on push
 - Expand Swagger examples and full response schemas
 - Add deployment and environment guidance
+
+Continuous integration
+
+This repo includes a GitHub Actions workflow that runs the test suite on push and pull requests to `main`.
+
+Badge (build status):
+
+![CI](https://github.com/Galp2001/RestAssigment2/actions/workflows/ci.yml/badge.svg)
+
+Useful API examples
+
+- Register:
+
+```bash
+curl -X POST http://localhost:3000/auth/register \
+	-H 'Content-Type: application/json' \
+	-d '{"username":"alice","email":"alice@example.com","password":"P@ssw0rd"}'
+```
+
+- Login:
+
+```bash
+curl -X POST http://localhost:3000/auth/login \
+	-H 'Content-Type: application/json' \
+	-d '{"identifier":"alice","password":"P@ssw0rd"}'
+```
+
+OpenAPI /docs
+
+Start the server and open `http://localhost:3000/docs` to view the interactive API docs (Swagger UI).
+
+Troubleshooting
+
+- If you see warnings about duplicate schema indexes for `username`/`email`, check model definitions and remove duplicate `index: true` or `schema.index()` usages.
+- If GitHub Actions fails due to Node engine constraints, adjust the `node-version` in `.github/workflows/ci.yml` to a compatible version.
