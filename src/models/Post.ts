@@ -5,7 +5,7 @@ const postSchema = new Schema<PostDoc>(
   {
     title: { type: String, required: true },
     body: { type: String, required: true },
-    senderId: { type: String, required: true },
+    senderId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     likes: { type: Number, default: 0 },
   },
   { timestamps: true }

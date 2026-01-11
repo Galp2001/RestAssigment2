@@ -23,6 +23,14 @@ const { commentsRouter } = require('./src/routes/comments');
 app.use('/comment', commentsRouter);
 const { usersRouter } = require('./src/routes/users');
 app.use('/', usersRouter);
+// Swagger UI (optional). If `swagger-ui-express` is not installed, this will be skipped.
+try {
+    const swaggerUi = require('swagger-ui-express');
+    const swaggerSpec = require('./src/swagger');
+    app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+} catch (e) {
+    console.warn('swagger-ui-express not installed; /docs disabled');
+}
 const { errorHandler } = require('./src/middleware/errorHandler');
 app.use(errorHandler);
 

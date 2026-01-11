@@ -28,33 +28,49 @@ afterEach(async () => {
 
 describe('Validation errors', () => {
   it('POST /post returns 400 when required fields missing', async () => {
-    const res = await request(app).post('/post').send({ title: 'Only title' });
+    await request(app).post('/auth/register').send({ username: 'v1', email: 'v1@example.com', password: 'password' });
+    const login = await request(app).post('/auth/login').send({ identifier: 'v1@example.com', password: 'password' });
+    const token = login.body.accessToken;
+
+    const res = await request(app).post('/post').send({ title: 'Only title' }).set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('errors');
   });
 
   it('PUT /post returns 400 when title/body are empty', async () => {
-    const created = await request(app).post('/post').send({ title: 'T', body: 'B', senderId: 's' });
+    await request(app).post('/auth/register').send({ username: 'v2', email: 'v2@example.com', password: 'password' });
+    const login = await request(app).post('/auth/login').send({ identifier: 'v2@example.com', password: 'password' });
+    const token = login.body.accessToken;
+
+    const created = await request(app).post('/post').send({ title: 'T', body: 'B' }).set('Authorization', `Bearer ${token}`);
     const id = created.body._id;
-    const res = await request(app).put(`/post/${id}`).send({ title: '', body: '' });
+    const res = await request(app).put(`/post/${id}`).set('Authorization', `Bearer ${token}`).send({ title: '', body: '' });
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('errors');
   });
 
   it('POST /comment returns 400 when required fields missing', async () => {
-    const post = await request(app).post('/post').send({ title: 'T', body: 'B', senderId: 's' });
+    await request(app).post('/auth/register').send({ username: 'v3', email: 'v3@example.com', password: 'password' });
+    const login = await request(app).post('/auth/login').send({ identifier: 'v3@example.com', password: 'password' });
+    const token = login.body.accessToken;
+
+    const post = await request(app).post('/post').send({ title: 'T', body: 'B' }).set('Authorization', `Bearer ${token}`);
     const postId = post.body._id;
-    const res = await request(app).post('/comment').send({ postId });
+    const res = await request(app).post('/comment').send({ postId }).set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('errors');
   });
 
   it('PUT /comment returns 400 when text missing', async () => {
-    const post = await request(app).post('/post').send({ title: 'T', body: 'B', senderId: 's' });
+    await request(app).post('/auth/register').send({ username: 'v4', email: 'v4@example.com', password: 'password' });
+    const login = await request(app).post('/auth/login').send({ identifier: 'v4@example.com', password: 'password' });
+    const token = login.body.accessToken;
+
+    const post = await request(app).post('/post').send({ title: 'T', body: 'B' }).set('Authorization', `Bearer ${token}`);
     const postId = post.body._id;
-    const created = await request(app).post('/comment').send({ postId, authorId: 'a', text: 'x' });
+    const created = await request(app).post('/comment').send({ postId, text: 'x' }).set('Authorization', `Bearer ${token}`);
     const id = created.body._id;
-    const res = await request(app).put(`/comment/${id}`).send({});
+    const res = await request(app).put(`/comment/${id}`).set('Authorization', `Bearer ${token}`).send({});
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('errors');
   });

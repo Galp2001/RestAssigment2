@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-const { User, RefreshToken } = require('../models');
+const { User, RefreshToken, Post, Comment } = require('../models');
 const { hashPassword, comparePassword } = require('../utils/password');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/jwt');
 
@@ -117,6 +117,13 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
 
 export async function deleteUser(req: Request, res: Response, next: NextFunction) {
   try {
+    const requester = (req as any).user?.id;
+    if (!requester) return res.status(401).json({ error: 'Unauthorized' });
+    if (requester !== req.params.id) return res.status(403).json({ error: 'Forbidden' });
+
+    // delete posts and comments by this user
+    await Post.deleteMany({ senderId: req.params.id });
+    await Comment.deleteMany({ authorId: req.params.id });
     await User.findByIdAndDelete(req.params.id);
     return res.status(204).send();
   } catch (err) {

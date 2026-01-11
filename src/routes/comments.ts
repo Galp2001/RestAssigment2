@@ -7,13 +7,14 @@ import {
   deleteComment,
 } from '../controllers/commentController';
 import { validateCommentCreate, validateCommentUpdate } from '../middleware/validation';
+import { authMiddleware } from '../middleware/auth';
 
 const router = Router();
 
-router.post('/', validateCommentCreate, createComment);
+router.post('/', authMiddleware, validateCommentCreate, createComment);
 router.get('/', listComments);
 router.get('/:id', getComment);
-router.put('/:id', validateCommentUpdate, updateComment);
-router.delete('/:id', deleteComment);
+router.put('/:id', authMiddleware, validateCommentUpdate, updateComment);
+router.delete('/:id', authMiddleware, deleteComment);
 
 export { router as commentsRouter };

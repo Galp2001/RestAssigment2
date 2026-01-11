@@ -3,12 +3,10 @@ import { Document, Types } from 'mongoose';
 export interface PostInput {
   title: string;
   body: string;
-  senderId: string;
 }
 
 export interface CommentInput {
   postId: string;
-  authorId: string;
   text: string;
 }
 

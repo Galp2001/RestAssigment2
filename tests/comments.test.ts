@@ -28,10 +28,13 @@ afterEach(async () => {
 
 describe('Comments API', () => {
   it('creates and retrieves comments for a post', async () => {
-    const post = await request(app).post('/post').send({ title: 'P', body: 'B', senderId: 's' });
+    // create user and post
+    await request(app).post('/auth/register').send({ username: 'cuser', email: 'cuser@example.com', password: 'password' });
+    const login = await request(app).post('/auth/login').send({ identifier: 'cuser@example.com', password: 'password' });
+    const post = await request(app).post('/post').send({ title: 'P', body: 'B' }).set('Authorization', `Bearer ${login.body.accessToken}`);
     const postId = post.body._id;
 
-    const c = await request(app).post('/comment').send({ postId, authorId: 'a1', text: 'hello' });
+    const c = await request(app).post('/comment').send({ postId, text: 'hello' }).set('Authorization', `Bearer ${login.body.accessToken}`);
     expect(c.status).toBe(201);
     expect(c.body).toHaveProperty('_id');
 
@@ -41,17 +44,19 @@ describe('Comments API', () => {
   });
 
   it('updates and deletes a comment', async () => {
-    const post = await request(app).post('/post').send({ title: 'P', body: 'B', senderId: 's' });
+    await request(app).post('/auth/register').send({ username: 'c2', email: 'c2@example.com', password: 'password' });
+    const login = await request(app).post('/auth/login').send({ identifier: 'c2@example.com', password: 'password' });
+    const post = await request(app).post('/post').send({ title: 'P', body: 'B' }).set('Authorization', `Bearer ${login.body.accessToken}`);
     const postId = post.body._id;
 
-    const created = await request(app).post('/comment').send({ postId, authorId: 'a2', text: 'x' });
+    const created = await request(app).post('/comment').send({ postId, text: 'x' }).set('Authorization', `Bearer ${login.body.accessToken}`);
     const id = created.body._id;
 
-    const upd = await request(app).put(`/comment/${id}`).send({ text: 'y' });
+    const upd = await request(app).put(`/comment/${id}`).send({ text: 'y' }).set('Authorization', `Bearer ${login.body.accessToken}`);
     expect(upd.status).toBe(200);
     expect(upd.body.text).toBe('y');
 
-    const del = await request(app).delete(`/comment/${id}`);
+    const del = await request(app).delete(`/comment/${id}`).set('Authorization', `Bearer ${login.body.accessToken}`);
     expect(del.status).toBe(204);
   });
 });
