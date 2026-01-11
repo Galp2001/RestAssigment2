@@ -42,10 +42,9 @@ GET http://localhost:3000/post
 GET http://localhost:3000/post?sender=user123
 
 ### Posts — Get by id
-GET http://localhost:3000/post/{{postId}}
-
+GET http://localhost:3000/post/696121d65fff498a538d3070
 ### Posts — Update
-PUT http://localhost:3000/post/{{postId}}
+PUT http://localhost:3000/post/696121d65fff498a538d3070
 Content-Type: application/json
 
 {
@@ -58,7 +57,7 @@ POST http://localhost:3000/comment
 Content-Type: application/json
 
 {
-  "postId": "{{postId}}",
+  "postId": "69611fa15fff498a538d3052",
   "authorId": "authorA",
   "text": "Nice post!"
 }
@@ -72,13 +71,13 @@ Content-Type: application/json
 }
 
 ### Comments — List by post
-GET http://localhost:3000/comment?post={{postId}}
+GET http://localhost:3000/comment?post=69611fa15fff498a538d3052
 
 ### Comments — Get by id
-GET http://localhost:3000/comment/{{commentId}}
+GET http://localhost:3000/comment/696121fe5fff498a538d3073
 
 ### Comments — Update
-PUT http://localhost:3000/comment/{{commentId}}
+PUT http://localhost:3000/comment/696121fe5fff498a538d3073
 Content-Type: application/json
 
 {
@@ -86,7 +85,7 @@ Content-Type: application/json
 }
 
 ### Comments — Delete
-DELETE http://localhost:3000/comment/{{commentId}}
+DELETE http://localhost:3000/comment/696121fe5fff498a538d3073
 
 ### Notes
 - Use the {{postId}} and {{commentId}} placeholders returned by create requests.
