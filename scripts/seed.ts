@@ -21,17 +21,17 @@ async function seed() {
     ] as any[]);
 
     const posts = await Post.create([
-      { title: 'Welcome', body: 'Welcome to the demo', senderId: admin._id },
-      { title: 'Second Post', body: 'Another post', senderId: alice._id },
+      { title: 'Welcome', body: 'Welcome to the demo', senderId: admin!._id },
+      { title: 'Second Post', body: 'Another post', senderId: alice!._id },
     ]);
 
     console.log('Created posts:');
     posts.forEach((p) => console.log(p._id.toString(), p.title));
 
     const comments = await Comment.create([
-      { postId: posts[0]._id, authorId: alice._id, text: 'Nice intro!' },
-      { postId: posts[0]._id, authorId: bob._id, text: 'Thanks for sharing.' },
-      { postId: posts[1]._id, authorId: carol._id, text: 'Good read.' },
+      { postId: posts[0]!._id, authorId: alice!._id, text: 'Nice intro!' },
+      { postId: posts[0]!._id, authorId: bob!._id, text: 'Thanks for sharing.' },
+      { postId: posts[1]!._id, authorId: carol!._id, text: 'Good read.' },
     ] as any[]);
 
     console.log('Created comments:');

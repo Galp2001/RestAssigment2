@@ -37,7 +37,7 @@ describe('Users & Auth', () => {
     expect(res.body).toHaveProperty('user');
     expect(res.body).toHaveProperty('accessToken');
     const cookies = res.headers['set-cookie'];
-    expect(cookies && cookies.some((c: string) => c.startsWith('refreshToken='))).toBe(true);
+    expect(Array.isArray(cookies) && cookies.some((c: string) => c.startsWith('refreshToken='))).toBe(true);
   });
 
   it('prevents duplicate registration', async () => {
@@ -69,7 +69,8 @@ describe('Users & Auth', () => {
     const login = await request(app).post('/auth/login').send({ identifier: 'u4@example.com', password: 'password' });
     const cookies = login.headers['set-cookie'];
     expect(cookies).toBeDefined();
-    const res = await request(app).post('/auth/refresh').set('Cookie', cookies as string[]);
+    const cookieArray = Array.isArray(cookies) ? cookies : cookies ? [cookies] : [];
+    const res = await request(app).post('/auth/refresh').set('Cookie', cookieArray as string[]);
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('accessToken');
   });
@@ -78,7 +79,8 @@ describe('Users & Auth', () => {
     await request(app).post('/auth/register').send({ username: 'u5', email: 'u5@example.com', password: 'password' });
     const login = await request(app).post('/auth/login').send({ identifier: 'u5@example.com', password: 'password' });
     const cookies = login.headers['set-cookie'];
-    const res = await request(app).post('/auth/logout').set('Cookie', cookies as string[]);
+    const cookieArray = Array.isArray(cookies) ? cookies : cookies ? [cookies] : [];
+    const res = await request(app).post('/auth/logout').set('Cookie', cookieArray as string[]);
     expect(res.status).toBe(204);
   });
 });
