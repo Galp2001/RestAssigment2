@@ -38,3 +38,12 @@ export interface UserDoc extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface RefreshTokenDoc extends Document {
+  userId: Types.ObjectId | string;
+  token: string;
+  expiresAt: Date;
+  revoked?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}

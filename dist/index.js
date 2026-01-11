@@ -1,10 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const { connectDB, disconnectDB } = require('./src/db');
 const app = express();
 const port = Number(process.env.PORT) || 3000;
 app.use(express.json());
+app.use(cookieParser());
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
@@ -15,6 +17,8 @@ const { postsRouter } = require('./src/routes/posts');
 app.use('/post', postsRouter);
 const { commentsRouter } = require('./src/routes/comments');
 app.use('/comment', commentsRouter);
+const { usersRouter } = require('./src/routes/users');
+app.use('/', usersRouter);
 const { errorHandler } = require('./src/middleware/errorHandler');
 app.use(errorHandler);
 async function start() {

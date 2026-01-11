@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateCommentUpdate = exports.validateCommentCreate = exports.validatePostUpdate = exports.validatePostCreate = void 0;
+exports.validateUserUpdate = exports.validateLogin = exports.validateRegister = exports.validateCommentUpdate = exports.validateCommentCreate = exports.validatePostUpdate = exports.validatePostCreate = void 0;
 const express_validator_1 = require("express-validator");
 exports.validatePostCreate = [
     (0, express_validator_1.body)('title').isString().notEmpty().withMessage('title is required'),
@@ -38,6 +38,39 @@ exports.validateCommentCreate = [
 ];
 exports.validateCommentUpdate = [
     (0, express_validator_1.body)('text').isString().notEmpty().withMessage('text is required'),
+    (req, res, next) => {
+        const errors = (0, express_validator_1.validationResult)(req);
+        if (!errors.isEmpty())
+            return res.status(400).json({ errors: errors.array() });
+        next();
+    },
+];
+// User validation
+exports.validateRegister = [
+    (0, express_validator_1.body)('username').isString().trim().notEmpty().withMessage('username is required'),
+    (0, express_validator_1.body)('email').isEmail().withMessage('valid email is required'),
+    (0, express_validator_1.body)('password').isString().isLength({ min: 6 }).withMessage('password must be at least 6 chars'),
+    (req, res, next) => {
+        const errors = (0, express_validator_1.validationResult)(req);
+        if (!errors.isEmpty())
+            return res.status(400).json({ errors: errors.array() });
+        next();
+    },
+];
+exports.validateLogin = [
+    (0, express_validator_1.body)('identifier').isString().notEmpty().withMessage('email or username required'),
+    (0, express_validator_1.body)('password').isString().notEmpty().withMessage('password required'),
+    (req, res, next) => {
+        const errors = (0, express_validator_1.validationResult)(req);
+        if (!errors.isEmpty())
+            return res.status(400).json({ errors: errors.array() });
+        next();
+    },
+];
+exports.validateUserUpdate = [
+    (0, express_validator_1.body)('displayName').optional().isString(),
+    (0, express_validator_1.body)('bio').optional().isString(),
+    (0, express_validator_1.body)('password').optional().isLength({ min: 6 }).withMessage('password must be at least 6 chars'),
     (req, res, next) => {
         const errors = (0, express_validator_1.validationResult)(req);
         if (!errors.isEmpty())
