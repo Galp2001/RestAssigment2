@@ -7,7 +7,7 @@ export async function createPost(req: Request, res: Response, next: NextFunction
   try {
     const { title, body } = req.body as { title: string; body: string };
     const senderId = (req as any).user?.id;
-    if (!senderId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!senderId) return next(new (require('../errors/HttpError')).default(401, 'Unauthorized'));
     const created = await Post.create({ title, body, senderId });
     return res.status(201).json(created);
   } catch (err) {
@@ -29,7 +29,7 @@ export async function listPosts(req: Request, res: Response, next: NextFunction)
 export async function getPost(req: Request, res: Response, next: NextFunction) {
   try {
     const post = await Post.findById(req.params.id).populate('senderId', 'username displayName');
-    if (!post) return res.status(404).json({ error: 'Post not found' });
+    if (!post) return next(new (require('../errors/HttpError')).default(404, 'Post not found'));
     return res.json(post);
   } catch (err) {
     return next(err);
@@ -40,11 +40,11 @@ export async function updatePost(req: Request, res: Response, next: NextFunction
   try {
     const { title, body } = req.body as { title: string; body: string };
     const userId = (req as any).user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!userId) return next(new (require('../errors/HttpError')).default(401, 'Unauthorized'));
 
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ error: 'Post not found' });
-    if (post.senderId.toString() !== userId) return res.status(403).json({ error: 'Forbidden' });
+    if (!post) return next(new (require('../errors/HttpError')).default(404, 'Post not found'));
+    if (post.senderId.toString() !== userId && (req as any).user?.role !== 'admin') return next(new (require('../errors/HttpError')).default(403, 'Forbidden'));
 
     post.title = title;
     post.body = body;
@@ -59,11 +59,11 @@ export async function updatePost(req: Request, res: Response, next: NextFunction
 export async function deletePost(req: Request, res: Response, next: NextFunction) {
   try {
     const userId = (req as any).user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!userId) return next(new (require('../errors/HttpError')).default(401, 'Unauthorized'));
 
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ error: 'Post not found' });
-    if (post.senderId.toString() !== userId) return res.status(403).json({ error: 'Forbidden' });
+    if (!post) return next(new (require('../errors/HttpError')).default(404, 'Post not found'));
+    if (post.senderId.toString() !== userId && (req as any).user?.role !== 'admin') return next(new (require('../errors/HttpError')).default(403, 'Forbidden'));
 
     await Comment.deleteMany({ postId: post._id });
     await post.deleteOne();

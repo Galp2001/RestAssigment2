@@ -15,9 +15,9 @@ function cookieOptions() {
 export async function register(req: Request, res: Response, next: NextFunction) {
   try {
     const { username, email, password, displayName } = req.body;
-    if (!username || !email || !password) return res.status(400).json({ error: 'Missing fields' });
+    if (!username || !email || !password) return next(new (require('../errors/HttpError')).default(400, 'Missing fields'));
     const exists = await User.findOne({ $or: [{ username }, { email }] });
-    if (exists) return res.status(409).json({ error: 'username or email already exists' });
+    if (exists) return next(new (require('../errors/HttpError')).default(409, 'username or email already exists'));
     const passwordHash = await hashPassword(password);
     const user = await User.create({ username, email, passwordHash, displayName });
     const access = signAccessToken({ id: user._id.toString(), username: user.username });
@@ -34,11 +34,11 @@ export async function register(req: Request, res: Response, next: NextFunction) 
 export async function login(req: Request, res: Response, next: NextFunction) {
   try {
     const { identifier, password } = req.body; // identifier is email or username
-    if (!identifier || !password) return res.status(400).json({ error: 'Missing fields' });
+    if (!identifier || !password) return next(new (require('../errors/HttpError')).default(400, 'Missing fields'));
     const user = await User.findOne({ $or: [{ email: identifier }, { username: identifier }] });
-    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+    if (!user) return next(new (require('../errors/HttpError')).default(401, 'Invalid credentials'));
     const ok = await comparePassword(password, user.passwordHash);
-    if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
+    if (!ok) return next(new (require('../errors/HttpError')).default(401, 'Invalid credentials'));
     const access = signAccessToken({ id: user._id.toString(), username: user.username });
     const refresh = signRefreshToken({ id: user._id.toString() });
     await RefreshToken.create({ userId: user._id, token: refresh, expiresAt: new Date(Date.now() + 7 * 24 * 3600 * 1000) });
@@ -65,15 +65,15 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
 export async function refresh(req: Request, res: Response, next: NextFunction) {
   try {
     const refresh = req.cookies?.refreshToken || req.body.refreshToken;
-    if (!refresh) return res.status(401).json({ error: 'Missing refresh token' });
+    if (!refresh) return next(new (require('../errors/HttpError')).default(401, 'Missing refresh token'));
     let payload;
     try {
       payload = verifyRefreshToken(refresh);
     } catch (e) {
-      return res.status(401).json({ error: 'Invalid refresh token' });
+      return next(new (require('../errors/HttpError')).default(401, 'Invalid refresh token'));
     }
     const db = await RefreshToken.findOne({ token: refresh, revoked: false });
-    if (!db) return res.status(401).json({ error: 'Refresh token revoked or not found' });
+    if (!db) return next(new (require('../errors/HttpError')).default(401, 'Refresh token revoked or not found'));
     const access = signAccessToken({ id: payload.sub, username: payload.username });
     // optional: rotate refresh token
     return res.json({ accessToken: access });
@@ -85,7 +85,7 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
 export async function getUser(req: Request, res: Response, next: NextFunction) {
   try {
     const user = await User.findById(req.params.id).select('-passwordHash');
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) return next(new (require('../errors/HttpError')).default(404, 'User not found'));
     return res.json(user);
   } catch (err) {
     next(err);
@@ -108,7 +108,7 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
     if (req.body.bio) update.bio = req.body.bio;
     if (req.body.password) update.passwordHash = await hashPassword(req.body.password);
     const updated = await User.findByIdAndUpdate(req.params.id, update, { new: true }).select('-passwordHash');
-    if (!updated) return res.status(404).json({ error: 'User not found' });
+    if (!updated) return next(new (require('../errors/HttpError')).default(404, 'User not found'));
     return res.json(updated);
   } catch (err) {
     next(err);
@@ -118,8 +118,8 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
 export async function deleteUser(req: Request, res: Response, next: NextFunction) {
   try {
     const requester = (req as any).user?.id;
-    if (!requester) return res.status(401).json({ error: 'Unauthorized' });
-    if (requester !== req.params.id) return res.status(403).json({ error: 'Forbidden' });
+    if (!requester) return next(new (require('../errors/HttpError')).default(401, 'Unauthorized'));
+    if (requester !== req.params.id && (req as any).user?.role !== 'admin') return next(new (require('../errors/HttpError')).default(403, 'Forbidden'));
 
     // delete posts and comments by this user
     await Post.deleteMany({ senderId: req.params.id });

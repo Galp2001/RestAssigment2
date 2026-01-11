@@ -33,6 +33,7 @@ export interface UserDoc extends Document {
   passwordHash: string;
   displayName?: string;
   bio?: string;
+  role?: 'user' | 'admin';
   createdAt: Date;
   updatedAt: Date;
 }

@@ -34,7 +34,8 @@ describe('Validation errors', () => {
 
     const res = await request(app).post('/post').send({ title: 'Only title' }).set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('errors');
+    expect(res.body).toHaveProperty('error');
+    expect(Array.isArray(res.body.error.details)).toBe(true);
   });
 
   it('PUT /post returns 400 when title/body are empty', async () => {
@@ -46,7 +47,8 @@ describe('Validation errors', () => {
     const id = created.body._id;
     const res = await request(app).put(`/post/${id}`).set('Authorization', `Bearer ${token}`).send({ title: '', body: '' });
     expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('errors');
+    expect(res.body).toHaveProperty('error');
+    expect(Array.isArray(res.body.error.details)).toBe(true);
   });
 
   it('POST /comment returns 400 when required fields missing', async () => {
@@ -58,7 +60,8 @@ describe('Validation errors', () => {
     const postId = post.body._id;
     const res = await request(app).post('/comment').send({ postId }).set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('errors');
+    expect(res.body).toHaveProperty('error');
+    expect(Array.isArray(res.body.error.details)).toBe(true);
   });
 
   it('PUT /comment returns 400 when text missing', async () => {
@@ -72,6 +75,7 @@ describe('Validation errors', () => {
     const id = created.body._id;
     const res = await request(app).put(`/comment/${id}`).set('Authorization', `Bearer ${token}`).send({});
     expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('errors');
+    expect(res.body).toHaveProperty('error');
+    expect(Array.isArray(res.body.error.details)).toBe(true);
   });
 });

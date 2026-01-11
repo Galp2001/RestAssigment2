@@ -26,7 +26,16 @@ app.use('/', usersRouter);
 // Swagger UI (optional). If `swagger-ui-express` is not installed, this will be skipped.
 try {
     const swaggerUi = require('swagger-ui-express');
-    const swaggerSpec = require('./src/swagger');
+    let swaggerSpecRaw;
+    try {
+        // prefer TS module when running under ts-node/ts-jest
+        swaggerSpecRaw = require('./src/swagger');
+    } catch (e) {
+        // fallback to JSON spec for plain node environments
+        swaggerSpecRaw = require('./src/swagger.json');
+    }
+    // normalize CommonJS/ESM default export
+    const swaggerSpec = swaggerSpecRaw && swaggerSpecRaw.default ? swaggerSpecRaw.default : swaggerSpecRaw;
     app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 } catch (e) {
     console.warn('swagger-ui-express not installed; /docs disabled');

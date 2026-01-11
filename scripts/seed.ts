@@ -14,7 +14,7 @@ async function seed() {
 
     // Create some users
     const [admin, alice, bob, carol] = await User.create([
-      { username: 'admin', email: 'admin@example.com', passwordHash: 'changeme' },
+      { username: 'admin', email: 'admin@example.com', passwordHash: 'changeme', role: 'admin' },
       { username: 'alice', email: 'alice@example.com', passwordHash: 'changeme' },
       { username: 'bob', email: 'bob@example.com', passwordHash: 'changeme' },
       { username: 'carol', email: 'carol@example.com', passwordHash: 'changeme' },

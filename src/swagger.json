@@ -1,0 +1,90 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "REST Assignment API",
+    "version": "1.0.0",
+    "description": "API documentation for Posts, Comments and Users with JWT auth"
+  },
+  "servers": [{ "url": "http://localhost:3000" }],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": { "type": "string" },
+              "details": { "type": "array", "items": { "type": "object" } },
+              "stack": { "type": "string" }
+            }
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "username": { "type": "string" },
+          "email": { "type": "string" },
+          "displayName": { "type": "string" },
+          "bio": { "type": "string" },
+          "role": { "type": "string", "enum": ["user", "admin"] },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "UserCreate": {
+        "type": "object",
+        "properties": {
+          "username": { "type": "string" },
+          "email": { "type": "string" },
+          "password": { "type": "string" },
+          "displayName": { "type": "string" }
+        },
+        "required": ["username", "email", "password"]
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": { "type": "string" },
+          "user": { "$ref": "#/components/schemas/User" }
+        }
+      },
+      "Post": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "title": { "type": "string" },
+          "body": { "type": "string" },
+          "senderId": { "$ref": "#/components/schemas/User" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PostCreate": {
+        "type": "object",
+        "properties": { "title": { "type": "string" }, "body": { "type": "string" } },
+        "required": ["title", "body"]
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "postId": { "type": "string" },
+          "authorId": { "$ref": "#/components/schemas/User" },
+          "text": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CommentCreate": {
+        "type": "object",
+        "properties": { "postId": { "type": "string" }, "text": { "type": "string" } },
+        "required": ["postId", "text"]
+      }
+    }
+  },
+  "security": [{ "bearerAuth": [] }],
+  "paths": {}
+}

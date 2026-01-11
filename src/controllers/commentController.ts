@@ -5,7 +5,7 @@ export async function createComment(req: Request, res: Response, next: NextFunct
   try {
     const { postId, text } = req.body as { postId: string; text: string };
     const authorId = (req as any).user?.id;
-    if (!authorId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!authorId) return next(new (require('../errors/HttpError')).default(401, 'Unauthorized'));
     const created = await Comment.create({ postId, authorId, text });
     return res.status(201).json(created);
   } catch (err) {
@@ -38,11 +38,11 @@ export async function updateComment(req: Request, res: Response, next: NextFunct
   try {
     const { text } = req.body as { text?: string };
     const userId = (req as any).user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!userId) return next(new (require('../errors/HttpError')).default(401, 'Unauthorized'));
 
     const comment = await Comment.findById(req.params.id);
-    if (!comment) return res.status(404).json({ error: 'Comment not found' });
-    if (comment.authorId.toString() !== userId) return res.status(403).json({ error: 'Forbidden' });
+    if (!comment) return next(new (require('../errors/HttpError')).default(404, 'Comment not found'));
+    if (comment.authorId.toString() !== userId && (req as any).user?.role !== 'admin') return next(new (require('../errors/HttpError')).default(403, 'Forbidden'));
 
     comment.text = text ?? comment.text;
     await comment.save();
@@ -56,11 +56,11 @@ export async function updateComment(req: Request, res: Response, next: NextFunct
 export async function deleteComment(req: Request, res: Response, next: NextFunction) {
   try {
     const userId = (req as any).user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!userId) return next(new (require('../errors/HttpError')).default(401, 'Unauthorized'));
 
     const comment = await Comment.findById(req.params.id);
-    if (!comment) return res.status(404).json({ error: 'Comment not found' });
-    if (comment.authorId.toString() !== userId) return res.status(403).json({ error: 'Forbidden' });
+    if (!comment) return next(new (require('../errors/HttpError')).default(404, 'Comment not found'));
+    if (comment.authorId.toString() !== userId && (req as any).user?.role !== 'admin') return next(new (require('../errors/HttpError')).default(403, 'Forbidden'));
 
     await comment.deleteOne();
     return res.status(204).send();

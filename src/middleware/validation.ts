@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
+import HttpError from '../errors/HttpError';
 
 export const validatePostCreate = [
   body('title').isString().notEmpty().withMessage('title is required'),
@@ -7,7 +8,7 @@ export const validatePostCreate = [
   // senderId is derived from authenticated user; do not accept from client
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    if (!errors.isEmpty()) return next(HttpError.badRequest('Validation failed', errors.array()));
     next();
   },
 ];
@@ -19,7 +20,7 @@ export const validatePostUpdate = [
   // senderId should not be updated by client
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    if (!errors.isEmpty()) return next(HttpError.badRequest('Validation failed', errors.array()));
     next();
   },
 ];
@@ -30,7 +31,7 @@ export const validateCommentCreate = [
   body('text').isString().notEmpty().withMessage('text is required'),
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    if (!errors.isEmpty()) return next(HttpError.badRequest('Validation failed', errors.array()));
     next();
   },
 ];
@@ -39,7 +40,7 @@ export const validateCommentUpdate = [
   body('text').isString().notEmpty().withMessage('text is required'),
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    if (!errors.isEmpty()) return next(HttpError.badRequest('Validation failed', errors.array()));
     next();
   },
 ];

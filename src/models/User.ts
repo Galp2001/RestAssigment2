@@ -8,6 +8,7 @@ const userSchema = new Schema<UserDoc>(
     passwordHash: { type: String, required: true },
     displayName: { type: String },
     bio: { type: String },
+    role: { type: String, enum: ['user', 'admin'], default: 'user' },
   },
   { timestamps: true }
 );
